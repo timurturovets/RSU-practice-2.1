@@ -1,5 +1,22 @@
-//
-// Created by uzbek on 26.02.2025.
-//
+#include "task1.cpp"
 
-#include "menu.h"
+class menu {
+public:
+    static void start() {
+        const int TASKS_LEN = 1;
+        itask* tasks[TASKS_LEN] = {new task1()};
+
+        int choice;
+        do {
+            std::cout << "Choose task (1-11): ";
+            std::cin >> choice;
+        } while (choice < 0 || choice > TASKS_LEN);
+
+        try {
+            tasks[choice - 1]->run();
+        } catch (...){
+            std::cerr << "An error occurred while running your task: see above";
+            return;
+        }
+    }
+};

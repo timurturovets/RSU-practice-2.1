@@ -8,10 +8,7 @@ public:
             throw std::invalid_argument("Couldn't make encoder entity: invalid constructor argument(s)!");
         }
 
-        this->_key = (unsigned char *) malloc(sizeof(unsigned char) * key_len);
-        if (nullptr == this->_key) {
-            throw std::bad_alloc();
-        }
+        this->_key = new unsigned char[key_len];
 
         for (int i = 0; i < key_len; i++) {
             this->_key[i] = key[i];
@@ -29,8 +26,11 @@ public:
     }
 
     ~encoder() noexcept {
-        if (nullptr != this->_key) free(this->_key);
+        if (nullptr != this->_key) delete [] this->_key;
     }
+
+    encoder(encoder const &enc) = default;
+    encoder &operator =(encoder const &enc) = default;
 
     void set_key(unsigned char const * new_key, size_t new_key_len) {
         if (nullptr == new_key || 0 == new_key_len) {
@@ -87,11 +87,7 @@ public:
 private:
     unsigned char * _key;
     void inner_set_key(unsigned char const * new_key, size_t new_key_len) {
-        unsigned char * old = _key;
-        if (nullptr == (_key = (unsigned char*) realloc(_key, sizeof(unsigned char) * new_key_len))) {
-            free(old);
-            throw std::bad_alloc();
-        }
+        delete [] this->_key;
 
         for (int i = 0; i < new_key_len; i++) {
             this->_key[i] = new_key[i];
