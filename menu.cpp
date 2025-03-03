@@ -1,10 +1,11 @@
 #include "task1.cpp"
+#include "task2.cpp"
 
 class menu {
 public:
     static void start() {
-        const int TASKS_LEN = 1;
-        itask* tasks[TASKS_LEN] = {new task1()};
+        const int TASKS_LEN = 2;
+        itask* tasks[TASKS_LEN] = {new task1(), new task2()};
 
         int choice;
         do {

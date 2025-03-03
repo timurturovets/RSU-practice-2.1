@@ -1,4 +1,4 @@
-#include <cstring>
+#pragma once
 #include "task1.h"
 #include "itask.h"
 
