@@ -8,6 +8,10 @@ public:
         _unreal = unreal;
     }
 
+    ~complex_num() noexcept = default;
+    complex_num(complex_num const &cn) = default;
+    complex_num& operator =(complex_num const &cn) = default;
+
     complex_num operator +(complex_num &cn) const {
         return complex_num(this->_real + cn._real, this->_unreal + cn._unreal);
     }
