@@ -13,9 +13,9 @@ private:
 
         double temp;
         for(size_t i = 0; i < rm._rows; i++) {
-            temp = rm._m[r1][i];
-            rm._m[r1][i] = rm._m[r2][i];
-            rm._m[r2][i] = temp;
+            temp = rm[r1][i];
+            rm[r1][i] = rm[r2][i];
+            rm[r2][i] = temp;
         }
 
         return rm;
@@ -88,7 +88,7 @@ public:
 
         for (size_t i = 0; i < this->_rows; i++) {
             for (size_t j = 0; j < this->_cols; j++) {
-                new_rm[i][j] = this->_m[i][j] + rm[i][j];
+                new_rm[i][j] = (*this)[i][j] + rm[i][j];
             }
         }
 
