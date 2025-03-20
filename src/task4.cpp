@@ -1,87 +1,59 @@
-#include <cstdio>
-#include <stdexcept>
-#include <cmath>
+#include "../include/task4.h"
 
-class real_matrix {
-private:
-    double **_m;
-    size_t _rows;
-    size_t _cols;
-
-    static real_matrix &swap_rows(real_matrix &rm, size_t r1, size_t r2) {
-        if (r1 >= rm._rows || r2 >= rm._rows) throw index_out_of_range_exception();
-
-        double temp;
-        for(size_t i = 0; i < rm._rows; i++) {
-            temp = rm[r1][i];
-            rm[r1][i] = rm[r2][i];
-            rm[r2][i] = temp;
-        }
-
-        return rm;
-    }
-
-public:
-    class non_square_matrix_exception : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "This matrix is not square";
-        }
-    };
-
-    class singular_matrix_exception : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "This matrix is singular";
-        }
-    };
-
-    class index_out_of_range_exception : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Couldn't access item: index out of range";
-        }
-    };
-
-    class matrices_sizing_unequal_exception : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Matrices sizes are unequal";
-        }
-    };
-
-    class matrices_sizing_unmatched_exception : public std::exception {
-    public:
-        [[nodiscard]] const char *what() const noexcept override {
-            return "Matrices sizing don't match";
-        }
-    };
-
-    real_matrix(size_t const rows, size_t const cols) :_rows(rows), _cols(cols) {
-        this->_m = new double*[_rows];
+namespace lab {
+    real_matrix::real_matrix(size_t const rows, size_t const cols) : _rows(rows), _cols(cols) {
+        this->_m = new double *[_rows];
         for (size_t i = 0; i < _rows; i++) {
-            this->_m[i] = new double[_cols];
+            (*this)[i] = new double[_cols];
             for (size_t j = 0; j < _cols; j++) {
-                this->_m[i][j] = 0;
+                (*this)[i][j] = 0;
             }
         }
     }
 
-    real_matrix(real_matrix const &rm) = default;
-    real_matrix &operator =(real_matrix const &rm) = default;
-    ~real_matrix() noexcept {
-        for (size_t i = 0; i < this->_rows; i++) {
-            delete [] this->_m[i];
+    real_matrix::real_matrix(real_matrix const &rm) : _rows(rm._rows), _cols(rm._cols) {
+        _m = new double *[rm._rows];
+        for (size_t i = 0; i < rm._rows; i++) {
+            (*this)[i] = new double[rm._cols];
+            for (size_t j = 0; j < rm._cols; j++) {
+                (*this)[i][j] = rm[i][j];
+            }
         }
-        delete [] this->_m;
     }
 
-    double *operator [](size_t row) const {
+    real_matrix &real_matrix::operator=(real_matrix const &rm) {
+        if (&rm == this) return *this;
+
+        for (size_t i = 0; i < _rows; i++) {
+            delete[] _m[i];
+        }
+
+        delete[] _m;
+
+        _m = new double *[rm._rows];
+        for (size_t i = 0; i < rm._rows; i++) {
+            (*this)[i] = new double[rm._cols];
+            for (size_t j = 0; j < rm._cols; j++) {
+                (*this)[i][j] = rm[i][j];
+            }
+        }
+
+        return *this;
+    }
+
+    real_matrix::~real_matrix() noexcept {
+        for (size_t i = 0; i < this->_rows; i++) {
+            delete[] this->_m[i];
+        }
+        delete[] this->_m;
+    }
+
+    double *&real_matrix::operator[](size_t row) const {
         if (row >= this->_rows) throw index_out_of_range_exception();
         return this->_m[row];
     }
 
-    real_matrix operator +(real_matrix const &rm) const {
+    real_matrix real_matrix::operator+(real_matrix const &rm) const {
         if (this->_rows != rm._rows || this->_cols != rm._cols) throw matrices_sizing_unequal_exception();
 
         real_matrix new_rm(this->_rows, this->_cols);
@@ -95,7 +67,7 @@ public:
         return new_rm;
     }
 
-    real_matrix operator -(real_matrix const &rm) const {
+    real_matrix real_matrix::operator-(real_matrix const &rm) const {
         if (this->_rows != rm._rows || this->_cols != rm._cols) throw matrices_sizing_unequal_exception();
 
         real_matrix new_rm(this->_rows, this->_cols);
@@ -109,14 +81,14 @@ public:
         return new_rm;
     }
 
-    real_matrix operator *(real_matrix const &rm) const {
+    real_matrix real_matrix::operator*(real_matrix const &rm) const {
         if (this->_cols != rm._rows) throw matrices_sizing_unmatched_exception();
 
         real_matrix new_rm(this->_cols, rm._rows);
 
         for (size_t i = 0; i < this->_rows; i++) {
             for (size_t j = 0; j < rm._cols; j++) {
-                for(size_t k = 0; k < this->_cols; k++) {
+                for (size_t k = 0; k < this->_cols; k++) {
                     new_rm[i][j] = this->_m[i][k] * rm._m[k][j];
                 }
             }
@@ -125,7 +97,7 @@ public:
         return new_rm;
     }
 
-    real_matrix operator *(double num) const {
+    real_matrix real_matrix::operator*(double num) const {
         for (size_t i = 0; i < this->_rows; i++) {
             for (size_t j = 0; j < this->_cols; j++) {
                 this->_m[i][j] *= num;
@@ -135,11 +107,7 @@ public:
         return *this;
     }
 
-    friend real_matrix operator *(double num, real_matrix const &rm) {
-        return rm * num;
-    }
-
-    [[nodiscard]] real_matrix transpose() const {
+    [[nodiscard]] real_matrix real_matrix::transpose() const {
         real_matrix transposed(this->_cols, this->_rows);
 
         for (size_t i = 0; i < this->_cols; i++) {
@@ -151,7 +119,7 @@ public:
         return transposed;
     }
 
-    [[nodiscard]] double determinant() const {
+    [[nodiscard]] double real_matrix::determinant() const {
         if (this->_rows != this->_cols) throw non_square_matrix_exception();
 
         double d = 1.0;
@@ -165,7 +133,7 @@ public:
                 }
             }
 
-            if(temp._m[row_with_max][i] == 0) throw singular_matrix_exception();
+            if (temp._m[row_with_max][i] == 0) throw singular_matrix_exception();
 
             if (row_with_max != i) {
                 real_matrix::swap_rows(temp, i, row_with_max);
@@ -185,7 +153,7 @@ public:
         return d;
     }
 
-    [[nodiscard]] real_matrix get_inverse() const {
+    [[nodiscard]] real_matrix real_matrix::get_inverse() const {
         if (this->_rows != this->_cols) throw non_square_matrix_exception();
         if (determinant() == 0) throw singular_matrix_exception();
 
@@ -224,11 +192,11 @@ public:
         }
 
         for (size_t i = 0; i < this->_rows; i++) {
-            for(size_t j = 0; j < this->_rows; j++) {
+            for (size_t j = 0; j < this->_rows; j++) {
                 inverse[i][j] = aux[i][j + this->_rows];
             }
         }
 
         return inverse;
     }
-};
+}

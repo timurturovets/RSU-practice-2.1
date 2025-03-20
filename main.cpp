@@ -2,5 +2,6 @@
 #include "menu.cpp"
 
 int main() {
-    menu::start();
+    lab::menu::start();
+    return 0;
 }
