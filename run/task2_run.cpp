@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "../include/itask.h"
+#include "itask.h"
 #include "../include/task2.h"
 namespace lab {
     class task2 : public itask {
@@ -19,8 +19,8 @@ namespace lab {
             auto lva4 = lva1 & lva2;
             auto lva5 = lva1 | lva2;
             auto lva6 = lva1.coimplicate(lva2);
-            auto lva7 = lva1.pierce_arrow(lva2);
-            auto lva8 = lva1.sheffer_stroke(lva2);
+            auto lva7 = lva1.Pierce_arrow(lva2);
+            auto lva8 = lva1.Sheffer_stroke(lva2);
 
             char lva1_str[32], lva2_str[32], buf[32];
             lva1.to_string(lva1_str);

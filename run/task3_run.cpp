@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/itask.h"
+#include "itask.h"
 #include "../include/task3.h"
 namespace lab {
     class task3 : public itask {

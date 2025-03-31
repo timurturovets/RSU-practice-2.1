@@ -14,7 +14,6 @@ namespace lab {
         void insert(char const *value, int priority) override;
 
         [[nodiscard]] char *get_max_priority_value() const override;
-        [[nodiscard]] int get_max_priority() const override;
         void del_max_priority_value() override;
 
         binary_priority_queue &merge(binary_priority_queue &pq);

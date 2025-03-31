@@ -1,6 +1,6 @@
 #pragma once
 #include "../include/task1.h"
-#include "../include/itask.h"
+#include "itask.h"
 
 namespace lab {
     class task1 : public itask {
