@@ -6,14 +6,18 @@ namespace lab {
         _size = 0;
     }
 
+    size_t get_left_child_index(size_t pos) { return pos * 2 + 1; }
+    size_t get_right_child_index(size_t pos) { return pos * 2 + 2; }
+    size_t get_parent_index(size_t pos) { return (pos - 1) / 2; }
+
     binary_priority_queue::binary_priority_queue(binary_priority_queue const &bpq) {
         _data = new binary_priority_queue_node[bpq._size];
 
         for (size_t i = 0; i < bpq._size; i++) {
-        _data[i].value = new char[std::strlen(bpq._data[i].value) + 1];
-        strcpy(_data[i].value, bpq._data[i].value);
+            _data[i].value = new char[std::strlen(bpq._data[i].value) + 1];
+            strcpy(_data[i].value, bpq._data[i].value);
 
-        _data[i].priority = bpq._data[i].priority;
+            _data[i].priority = bpq._data[i].priority;
         }
 
         _size = bpq._size;
@@ -57,17 +61,19 @@ namespace lab {
     }
 
     void binary_priority_queue::sift_down(size_t pos) {
-        while (2 * pos + 1 < _size) {
-            size_t l = (2 * pos) + 1, r = (2 * pos) + 2;
-            size_t i = l;
+        size_t left_child_index, right_child_index;
+        while ((left_child_index = get_left_child_index(pos)) < _size
+                 ||(right_child_index = get_right_child_index(pos)) < _size) {
+            size_t m;
 
-            if (r < _size && _data[r].priority < _data[l].priority) i = r;
+            if (right_child_index >= _size
+                || _data[left_child_index].priority > _data[right_child_index].priority) m = left_child_index;
+            else m = right_child_index;
 
-            if (_data[pos].priority <= _data[i].priority) break;
+            if (_data[pos].priority > _data[m].priority) return;
 
-            swap(_data[pos], _data[i]);
-
-            pos = i;
+            swap(_data[pos], _data[m]);
+            pos = m;
         }
     }
 
@@ -85,27 +91,33 @@ namespace lab {
         return _data[0].value;
     }
 
-    int binary_priority_queue::get_max_priority() const {
-        return _data[0].priority;
-    }
+    void binary_priority_queue::del_max_priority_value(char *&out_value, int &out_priority) {
 
-    void binary_priority_queue::del_max_priority_value() {
+        memcpy(out_value, _data[0].value, strlen(_data[0].value));
+        out_priority = _data[0].priority;
+
         delete [] _data[0].value;
 
         _data[0] = _data[_size-- - 1];
         sift_down(0);
     }
 
-    binary_priority_queue &binary_priority_queue::merge(binary_priority_queue &pq) {
-        if (&pq == this) return *this;
+    priority_queue *binary_priority_queue::merge(priority_queue *pq_stub) {
+        binary_priority_queue pq = *dynamic_cast<binary_priority_queue *>(pq_stub);
 
+        if (&pq == this) return this;
+
+        int curr_p;
+        char *curr_v;
         while (pq._size > 0) {
-            this->insert(pq.get_max_priority_value(), pq.get_max_priority());
-            pq.del_max_priority_value();
+            pq.del_max_priority_value(curr_v, curr_p);
+            this->insert(curr_v, curr_p);
         }
 
-        return *this;
+        return this;
     }
+
+    binary_priority_queue &binary_priority_queue::meld();
 
     void binary_priority_queue::resize(size_t new_size) {
         auto *resized = new binary_priority_queue_node[new_size];

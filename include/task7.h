@@ -38,7 +38,7 @@ public:
 
     void insert(char const *v, int p) override;
     char *get_max_priority_value() const override;
-    void del_max_priority_value() override;
-    priority_queue &merge(priority_queue &pq) override;
+    void del_max_priority_value(char *&out_value, int &out_priority) override;
+    priority_queue *merge(priority_queue *pq) override;
     };
 }

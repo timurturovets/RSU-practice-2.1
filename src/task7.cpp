@@ -151,7 +151,7 @@ namespace lab {
     void binomial_priority_queue::insert(char const *v, int p)  {
         auto *temp = new binomial_priority_queue();
         temp->head = new bpq_node(p, v, 0);
-        merge(*temp);
+        merge(temp);
     }
 
     char *binomial_priority_queue::get_max_priority_value() const {
@@ -159,7 +159,7 @@ namespace lab {
         return max_node == nullptr ? nullptr : max_node->value;
     }
 
-    void binomial_priority_queue::del_max_priority_value() {
+    void binomial_priority_queue::del_max_priority_value(char *&out_value, int &out_priority) {
         auto *max_node = get_max_priority_node();
         if (max_node == nullptr) return;
 
@@ -176,15 +176,26 @@ namespace lab {
         binomial_priority_queue child_bpq;
         child_bpq.head = reverse(max_node->child);
 
+        out_priority = max_node->priority;
+
+        memcpy(out_value, max_node->value, std::strlen(max_node->value));
+
         max_node->child = nullptr;
         max_node->peer = nullptr;
         delete max_node;
 
-        merge(child_bpq);
+        merge(&child_bpq);
     }
 
-    priority_queue &binomial_priority_queue::merge(priority_queue &pq) {
+    priority_queue *binomial_priority_queue::merge(priority_queue *pq_stub) {
 
+        binomial_priority_queue pq = dynamic_cast<binomial_priority_queue &>(*pq_stub);
+
+        auto head_copy = pq.head;
+
+        while (head_copy->peer != pq.head) {
+
+        }
     }
 
     binomial_priority_queue::bpq_node *binomial_priority_queue::reverse(binomial_priority_queue::bpq_node *bpqn) {

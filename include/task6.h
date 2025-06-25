@@ -14,9 +14,9 @@ namespace lab {
         void insert(char const *value, int priority) override;
 
         [[nodiscard]] char *get_max_priority_value() const override;
-        void del_max_priority_value() override;
+        void del_max_priority_value(char *&out_value, int &out_priority) override;
 
-        binary_priority_queue &merge(binary_priority_queue &pq);
+        priority_queue *merge(priority_queue *pq) override;
     private:
         size_t _size;
         struct binary_priority_queue_node {
