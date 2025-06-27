@@ -23,7 +23,7 @@ namespace lab {
         static lpq_node *merge_nodes(lpq_node *lpqn1, lpq_node *lpqn2);
     public:
         leftist_priority_queue();
-        ~leftist_priority_queue();
+        ~leftist_priority_queue() override;
         leftist_priority_queue(leftist_priority_queue const &lpq);
 
         void insert(char const *v, int p) override;
